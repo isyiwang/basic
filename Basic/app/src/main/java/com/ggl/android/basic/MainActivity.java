@@ -4,6 +4,9 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
+
+import java.util.logging.Handler;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -12,6 +15,9 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Toast.makeText(this, "onCreate called", Toast.LENGTH_SHORT).show();
+        GalleryChangeManager.getInstance().initialize(this);
     }
 
     @Override
@@ -34,5 +40,12 @@ public class MainActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        GalleryChangeManager.getInstance().destroy();
     }
 }
