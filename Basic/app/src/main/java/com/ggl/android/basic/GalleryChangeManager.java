@@ -10,8 +10,10 @@ import android.provider.MediaStore.Images.Media;
 import android.util.Log;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 /**
  * This class manages listening to changes for a phone's Gallery (image library) and notifies
@@ -20,12 +22,17 @@ import java.util.Date;
  * Created by isaac on 6/27/15.
  */
 public class GalleryChangeManager {
+    public interface IOnGalleryChangedListener {
+        public void onPhotoAdded(Photo photo);
+    }
+
     private static final String TAG = GalleryChangeManager.class.getSimpleName();
 
     private static GalleryChangeManager sManager;
     private static boolean sInitialized = false;
     private Context mContext;
     private ImageContentObserver mObserver;
+    private List<IOnGalleryChangedListener> mListeners = new ArrayList<>();
 
     public static GalleryChangeManager getInstance() {
         if (sManager != null) return sManager;
@@ -46,6 +53,10 @@ public class GalleryChangeManager {
     public void destroy() {
         mContext.getContentResolver().unregisterContentObserver(mObserver);
         mObserver = null;
+    }
+
+    public void addListener(IOnGalleryChangedListener listener) {
+        mListeners.add(listener);
     }
 
     private class ImageContentObserver extends ContentObserver {
@@ -71,12 +82,10 @@ public class GalleryChangeManager {
             super.onChange(selfChange);
 
             Toast.makeText(mContext, "Change received", Toast.LENGTH_SHORT).show();
-            queryAndNotifyLatestPhoto();
-        }
-
-        private void queryAndNotifyLatestPhoto() {
             Photo photo = getLatestPhoto();
-            // Notify listener of new photo
+            for (IOnGalleryChangedListener listener : mListeners) {
+                listener.onPhotoAdded(photo);
+            }
         }
 
         private Photo getLatestPhoto() {
@@ -94,8 +103,6 @@ public class GalleryChangeManager {
                 String path = c.getString(2);
 
                 Photo photo = new Photo(id, path, dateTaken);
-                Log.d(TAG, "Photo created: " + photo);
-
                 return photo;
             } catch (Exception ex) {
                 // Noop

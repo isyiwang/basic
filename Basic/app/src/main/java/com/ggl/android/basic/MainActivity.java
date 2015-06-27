@@ -10,6 +10,7 @@ import java.util.logging.Handler;
 
 
 public class MainActivity extends ActionBarActivity {
+    private PhotoSetManager mManager = new PhotoSetManager();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,6 +19,7 @@ public class MainActivity extends ActionBarActivity {
 
         Toast.makeText(this, "onCreate called", Toast.LENGTH_SHORT).show();
         GalleryChangeManager.getInstance().initialize(this);
+        GalleryChangeManager.getInstance().addListener(mManager);
     }
 
     @Override
