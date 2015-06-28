@@ -9,7 +9,7 @@ import android.util.Log;
 /**
  * Created by fangbrian on 6/27/15.
  */
-public class BasicService extends IntentService {
+public class BasicService extends IntentService implements PhotoSetManager.IPhotoSetListener {
 
     /**
      * Creates an IntentService.  Invoked by your subclass's constructor.
@@ -23,6 +23,9 @@ public class BasicService extends IntentService {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        GalleryChangeManager.getInstance().initialize(this);
+        PhotoSetManager.getInstance().setListener(this);
     }
 
     @Override
@@ -33,5 +36,10 @@ public class BasicService extends IntentService {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         return START_STICKY_COMPATIBILITY;
+    }
+
+    @Override
+    public void onPhotoSetAdded(PhotoSetManager.PhotoSet photoSet) {
+        // Show notification
     }
 }
