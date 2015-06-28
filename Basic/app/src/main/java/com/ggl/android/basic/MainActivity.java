@@ -2,6 +2,7 @@ package com.ggl.android.basic;
 
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -9,8 +10,9 @@ import android.widget.Toast;
 import java.util.logging.Handler;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity implements PhotoSetManager.IPhotoSetListener {
     private PhotoSetManager mManager = new PhotoSetManager();
+    private static final String TAG = MainActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,6 +22,7 @@ public class MainActivity extends ActionBarActivity {
         Toast.makeText(this, "onCreate called", Toast.LENGTH_SHORT).show();
         GalleryChangeManager.getInstance().initialize(this);
         GalleryChangeManager.getInstance().addListener(mManager);
+        mManager.setListener(this);
     }
 
     @Override
@@ -49,5 +52,10 @@ public class MainActivity extends ActionBarActivity {
         super.onDestroy();
 
         GalleryChangeManager.getInstance().destroy();
+    }
+
+    @Override
+    public void onPhotoSetAdded(PhotoSetManager.PhotoSet photoSet) {
+        Log.d(TAG, "Received photoset has " +  photoSet.size() + " elements");
     }
 }

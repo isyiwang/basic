@@ -12,6 +12,9 @@ import java.util.List;
  * Created by isaac on 6/27/15.
  */
 public class PhotoSetManager implements GalleryChangeManager.IOnGalleryChangedListener {
+    public interface IPhotoSetListener  {
+        public void onPhotoSetAdded(PhotoSet photoSet);
+    }
     public static class PhotoSet extends ArrayList<Photo> {}
     public static String TAG = PhotoSetManager.class.getSimpleName();
 
@@ -19,6 +22,7 @@ public class PhotoSetManager implements GalleryChangeManager.IOnGalleryChangedLi
     private PhotoSet photoSet = new PhotoSet();
     private Handler handler = new Handler(Looper.getMainLooper());
     private Runnable runnable;
+    private IPhotoSetListener mListener;
 
     @Override
     public void onPhotoAdded(Photo photo) {
@@ -30,14 +34,20 @@ public class PhotoSetManager implements GalleryChangeManager.IOnGalleryChangedLi
 
             @Override
             public void run() {
-                // Notify listenerr 
-                Log.d(TAG, "Posting runnable with " + photoSet.size() + " photos");
+                // Notify listenerr
+                if (mListener != null) {
+                    mListener.onPhotoSetAdded(photoSet);
+                }
                 photoSet.clear();
 
             }
         };
 
         handler.postDelayed(runnable, PHOTOSET_POST_DELAY_MS);
+    }
+
+    public void setListener(IPhotoSetListener listener) {
+        mListener = listener;
     }
 
 
