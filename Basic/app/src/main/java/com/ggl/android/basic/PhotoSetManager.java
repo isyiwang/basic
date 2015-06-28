@@ -24,6 +24,17 @@ public class PhotoSetManager implements GalleryChangeManager.IOnGalleryChangedLi
     private Runnable runnable;
     private IPhotoSetListener mListener;
 
+    private static PhotoSetManager sManager;
+
+    public static PhotoSetManager getInstance() {
+        if (sManager == null) {
+            sManager = new PhotoSetManager();
+            GalleryChangeManager.getInstance().addListener(sManager);
+        }
+
+        return sManager;
+    }
+
     @Override
     public void onPhotoAdded(Photo photo) {
         Log.d(TAG, "Photo received: " + photo);
