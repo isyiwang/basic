@@ -10,7 +10,7 @@ import android.widget.Toast;
 import java.util.logging.Handler;
 
 
-public class MainActivity extends ActionBarActivity implements PhotoSetManager.IPhotoSetListener {
+public class MainActivity extends ActionBarActivity {
     private PhotoSetManager mManager = new PhotoSetManager();
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -19,10 +19,6 @@ public class MainActivity extends ActionBarActivity implements PhotoSetManager.I
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Toast.makeText(this, "onCreate called", Toast.LENGTH_SHORT).show();
-        GalleryChangeManager.getInstance().initialize(this);
-        GalleryChangeManager.getInstance().addListener(mManager);
-        mManager.setListener(this);
     }
 
     @Override
@@ -45,17 +41,5 @@ public class MainActivity extends ActionBarActivity implements PhotoSetManager.I
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        GalleryChangeManager.getInstance().destroy();
-    }
-
-    @Override
-    public void onPhotoSetAdded(PhotoSetManager.PhotoSet photoSet) {
-        Log.d(TAG, "Received photoset has " +  photoSet.size() + " elements");
     }
 }
