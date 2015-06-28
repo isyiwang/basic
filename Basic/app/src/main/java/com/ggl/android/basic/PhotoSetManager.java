@@ -34,7 +34,7 @@ public class PhotoSetManager implements GalleryChangeManager.IOnGalleryChangedLi
 
             @Override
             public void run() {
-                // Notify listenerr
+                // TODO: Send push notification
                 if (mListener != null) {
                     mListener.onPhotoSetAdded(photoSet);
                 }
