@@ -5,20 +5,30 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
-
-import java.util.logging.Handler;
 
 
 public class MainActivity extends ActionBarActivity {
     private PhotoSetManager mManager = new PhotoSetManager();
     private static final String TAG = MainActivity.class.getSimpleName();
 
+    public static final String PHOTOSET_TIMESTAMP_EXTRA = "PHOTOSET_TIMESTAMP_EXTRA";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        displayPhotoSetFromIntent();
+    }
+
+    private void displayPhotoSetFromIntent() {
+        if (getIntent() == null) return;
+
+        Long timestamp = getIntent().getExtras().getLong(PHOTOSET_TIMESTAMP_EXTRA, 0);
+        PhotoSetManager.PhotoSet photoSet = PhotoSetManager.getInstance().getPhotoSetForTimestamp(timestamp);
+        if (photoSet == null) return;
+
+        Log.d(TAG, "Displaying photo set with " + photoSet.size() + " photos");
     }
 
     @Override

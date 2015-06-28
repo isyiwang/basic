@@ -1,6 +1,7 @@
 package com.ggl.android.basic;
 
 import android.app.IntentService;
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -19,7 +20,6 @@ public class BasicService extends IntentService implements PhotoSetManager.IPhot
     /**
      * Creates an IntentService.  Invoked by your subclass's constructor.
      *
-     * @param name Used to name the worker thread, important only for debugging.
      */
     public BasicService() {
         super("BasicService");
@@ -44,13 +44,15 @@ public class BasicService extends IntentService implements PhotoSetManager.IPhot
     }
 
     @Override
-    public void onPhotoSetAdded(PhotoSetManager.PhotoSet photoSet) {
+    public void onPhotoSetAdded(PhotoSetManager.PhotoSet photoSet, Long timestamp) {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.notification_template_icon_bg)
                 .setContentTitle("New photo set detected")
+                .setAutoCancel(true)
                 .setContentText(photoSet.size() + " photos");
 
         Intent resultIntent = new Intent(this, MainActivity.class);
+        resultIntent.putExtra(MainActivity.PHOTOSET_TIMESTAMP_EXTRA, timestamp);
         PendingIntent resultPendingIntent =
                 PendingIntent.getActivity(
                         this,
@@ -59,6 +61,6 @@ public class BasicService extends IntentService implements PhotoSetManager.IPhot
                         PendingIntent.FLAG_UPDATE_CURRENT
                 );
         builder.setContentIntent(resultPendingIntent);
-        ((NotificationManager)getSystemService(NOTIFICATION_SERVICE)).notify(mNotificationId++, builder.build());
+        ((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).notify(mNotificationId++, builder.build());
     }
 }

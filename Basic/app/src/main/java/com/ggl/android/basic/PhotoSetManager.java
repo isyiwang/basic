@@ -6,6 +6,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -13,7 +14,7 @@ import java.util.List;
  */
 public class PhotoSetManager implements GalleryChangeManager.IOnGalleryChangedListener {
     public interface IPhotoSetListener  {
-        public void onPhotoSetAdded(PhotoSet photoSet);
+        public void onPhotoSetAdded(PhotoSet photoSet, Long timestamp);
     }
     public static class PhotoSet extends ArrayList<Photo> {}
     public static String TAG = PhotoSetManager.class.getSimpleName();
@@ -23,6 +24,7 @@ public class PhotoSetManager implements GalleryChangeManager.IOnGalleryChangedLi
     private Handler handler = new Handler(Looper.getMainLooper());
     private Runnable runnable;
     private IPhotoSetListener mListener;
+    private HashMap<Long, PhotoSet> mPhotosetMap = new HashMap<>();
 
     private static PhotoSetManager sManager;
 
@@ -35,6 +37,10 @@ public class PhotoSetManager implements GalleryChangeManager.IOnGalleryChangedLi
         return sManager;
     }
 
+    public PhotoSet getPhotoSetForTimestamp(Long timestamp) {
+        return mPhotosetMap.get(timestamp);
+    }
+
     @Override
     public void onPhotoAdded(Photo photo) {
         Log.d(TAG, "Photo received: " + photo);
@@ -45,11 +51,13 @@ public class PhotoSetManager implements GalleryChangeManager.IOnGalleryChangedLi
 
             @Override
             public void run() {
-                if (mListener != null && photoSet.size() > 1) {
-                    mListener.onPhotoSetAdded(photoSet);
-                }
-                photoSet.clear();
+                Long ts = System.currentTimeMillis();
 
+                if (mListener != null && photoSet.size() > 1) {
+                    mListener.onPhotoSetAdded(photoSet, ts);
+                }
+                mPhotosetMap.put(ts, photoSet);
+                photoSet = new PhotoSet();
             }
         };
 
